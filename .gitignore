@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local databases, config files, and logs containing personal path references
+data/
+*.db
+*.db-journal
+*.db-wal
+*.log
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDE configurations
+.vscode/
+.idea/
+
+# PyInstaller build directories and archives
+build/
+dist/
+*.spec
+*.zip

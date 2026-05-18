@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis AV - Security Suite</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="radar-logo">
+                    <span class="shield-text">S</span>
+                    <div class="ping-circle"></div>
+                </div>
+                <h2>AEGIS</h2>
+                <span class="suite-version">v2.0 FOSS Edition</span>
+            </div>
+
+            <nav class="nav-links">
+                <button class="nav-btn active" data-target="dashboard">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                    Dashboard
+                </button>
+                <button class="nav-btn" data-target="scanner">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Scanner
+                </button>
+                <button class="nav-btn" data-target="threats">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1"/></svg>
+                    Threats Log <span class="badge" id="threat-badge">0</span>
+                </button>
+                <button class="nav-btn" data-target="quarantine">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Quarantine
+                </button>
+                <button class="nav-btn" data-target="whitelist">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 11 11 13 15 9"/></svg>
+                    Whitelist Rules
+                </button>
+                <button class="nav-btn" data-target="history">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    Logs & History
+                </button>
+                <button class="nav-btn" data-target="optimizer">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Optimizer
+                </button>
+                <button class="nav-btn" data-target="settings">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Settings
+                </button>
+            </nav>
+
+            <!-- Bottom Connection Status Card -->
+            <div class="connection-card">
+                <div class="conn-dot green"></div>
+                <div class="conn-text">
+                    <p class="status-title">System Protected</p>
+                    <p class="status-subtitle">Engine Online</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="workspace">
+            <!-- HEADER -->
+            <header class="top-bar">
+                <div class="welcome-msg">
+                    <h1>Aegis Protection Hub</h1>
+                    <p>Real-time threat intelligence and hardware acceleration active.</p>
+                </div>
+                <!-- Mini Stats Widget -->
+                <div class="quick-health">
+                    <div class="health-gauge">
+                        <div class="gauge-fill" style="width: 100%;"></div>
+                        <span class="health-percent">System Secure</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- PAGES CONTAINER -->
+            <div class="pages-container">
+                
+                <!-- 1. DASHBOARD PAGE -->
+                <section class="page active" id="dashboard">
+                    <div class="metrics-grid">
+                        <div class="metric-card cyan">
+                            <div class="card-bg-glow"></div>
+                            <span class="card-label-mini">FILES</span>
+                            <h3>Files Evaluated</h3>
+                            <p class="metric-value" id="dash-scanned">0</p>
+                            <p class="metric-sub">Across all scan scopes</p>
+                        </div>
+                        <div class="metric-card red" id="dash-threats-card">
+                            <div class="card-bg-glow"></div>
+                            <span class="card-label-mini">ALERT</span>
+                            <h3>Active Threats</h3>
+                            <p class="metric-value" id="dash-threats">0</p>
+                            <p class="metric-sub">Require immediate action</p>
+                        </div>
+                        <div class="metric-card yellow">
+                            <div class="card-bg-glow"></div>
+                            <span class="card-label-mini">VAULT</span>
+                            <h3>Quarantined Items</h3>
+                            <p class="metric-value" id="dash-quar">0</p>
+                            <p class="metric-sub">Isolated in secure vault</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-cols">
+                        <!-- Left: Realtime Monitor Logs -->
+                        <div class="glass-panel col-main">
+                            <div class="panel-header">
+                                <h2>Active Monitor Feed</h2>
+                                <span class="pulse-indicator">LIVE</span>
+                            </div>
+                            <div class="monitor-feed scrollable" id="monitor-feed-list">
+                                <p class="empty-feed">Active monitoring modules starting up...</p>
+                            </div>
+                        </div>
+
+                        <!-- Right: System Resource Ring -->
+                        <div class="glass-panel col-side">
+                            <div class="panel-header">
+                                <h2>Hardware Allocation</h2>
+                            </div>
+                            <div class="hardware-alloc">
+                                <div class="alloc-row">
+                                    <span class="alloc-lbl">OS Priority Class</span>
+                                    <span class="alloc-val highlight" id="hw-priority">STANDARD</span>
+                                </div>
+                                <div class="alloc-row">
+                                    <span class="alloc-lbl">Database SQLite Cache</span>
+                                    <span class="alloc-val highlight">100 MB RAM</span>
+                                </div>
+                                <div class="alloc-row">
+                                    <span class="alloc-lbl">CPU Usage</span>
+                                    <div class="mini-bar">
+                                        <div class="bar-fill" id="cpu-bar" style="width: 0%"></div>
+                                    </div>
+                                    <span class="alloc-val" id="cpu-lbl">0%</span>
+                                </div>
+                                <div class="alloc-row">
+                                    <span class="alloc-lbl">RAM Usage</span>
+                                    <div class="mini-bar">
+                                        <div class="bar-fill" id="ram-bar" style="width: 0%"></div>
+                                    </div>
+                                    <span class="alloc-val" id="ram-lbl">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. SCANNER PAGE -->
+                <section class="page" id="scanner">
+                    <div class="glass-panel mb-20">
+                        <div class="scanner-header">
+                            <h2>Choose Scan Mode</h2>
+                            <p>All engines execute concurrently in high-priority background worker threads.</p>
+                        </div>
+                        <div class="scan-modes-grid">
+                            <div class="scan-mode-card" onclick="startScan('quick')">
+                                <span class="mode-text-icon">FAST</span>
+                                <h3>Quick Scan</h3>
+                                <p>Scan system registry, startup items, and critical folders.</p>
+                                <button class="action-btn">Launch</button>
+                            </div>
+                            <div class="scan-mode-card" onclick="startScan('full')">
+                                <span class="mode-text-icon">FULL</span>
+                                <h3>Full Scan</h3>
+                                <p>Comprehensive scan evaluating all drives, memory, and archives.</p>
+                                <button class="action-btn">Launch</button>
+                            </div>
+                            <div class="scan-mode-card" id="custom-scan-card">
+                                <span class="mode-text-icon">PATH</span>
+                                <h3>Custom Scan</h3>
+                                <p>Select custom directory or file paths to evaluate.</p>
+                                <div class="custom-scan-input">
+                                    <input type="text" id="custom-path" placeholder="C:\Users\..." value="C:\">
+                                    <button class="action-btn" onclick="startScan('custom')">Scan Path</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scan Active Status Window -->
+                    <div class="glass-panel" id="scan-status-panel" style="display: none;">
+                        <div class="status-grid">
+                            <div class="status-info">
+                                <h2 id="scan-mode-lbl">QUICK SCAN RUNNING</h2>
+                                <p class="scanning-file" id="scan-current-file">Initializing engines...</p>
+                                
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" id="scan-progress-bar" style="width: 0%"></div>
+                                    <span class="progress-percent" id="scan-progress-percent">0%</span>
+                                </div>
+
+                                <div class="status-metrics">
+                                    <div class="stat-box">
+                                        <span class="stat-num" id="scan-scanned">0</span>
+                                        <span class="stat-lbl">Evaluated</span>
+                                    </div>
+                                    <div class="stat-box red">
+                                        <span class="stat-num" id="scan-threats">0</span>
+                                        <span class="stat-lbl">Threats Found</span>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="stat-num" id="scan-rate">0 /s</span>
+                                        <span class="stat-lbl">Speed</span>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="stat-num" id="scan-eta">--:--</span>
+                                        <span class="stat-lbl">ETA</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="status-controls">
+                                <button class="btn btn-pause" id="btn-pause" onclick="pauseScan()">Pause</button>
+                                <button class="btn btn-resume" id="btn-resume" onclick="resumeScan()" style="display:none;">Resume</button>
+                                <button class="btn btn-cancel" onclick="cancelScan()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. THREATS PAGE -->
+                <section class="page" id="threats">
+                    <div class="glass-panel">
+                        <div class="panel-header-action" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div>
+                                <h2>Active Threats Registry</h2>
+                                <p>Unresolved threats isolated or flagged by scanners. Action is recommended.</p>
+                            </div>
+                            <button class="btn btn-accent" id="btn-quarantine-all" onclick="quarantineAllThreats()" style="display: none; padding: 10px 20px; font-weight: 600;">Quarantine All</button>
+                        </div>
+                        <div class="table-container scrollable">
+                            <table class="premium-table" id="threats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Threat Identifier</th>
+                                        <th>Flagged File Location</th>
+                                        <th>Severity</th>
+                                        <th>Detection Engine</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="threats-list">
+                                    <tr>
+                                        <td colspan="5" class="empty-table">System Clean: No unresolved threats registered.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. QUARANTINE PAGE -->
+                <section class="page" id="quarantine">
+                    <div class="glass-panel mb-20">
+                        <div class="quarantine-summary-box">
+                            <div>
+                                <h2>Secure Isolation Vault</h2>
+                                <p>Isolated files are completely encrypted, inert, and safely separated from the OS.</p>
+                            </div>
+                            <button class="btn btn-danger" onclick="purgeQuarantine()">Purge Vault</button>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="table-container scrollable">
+                            <table class="premium-table" id="quarantine-table">
+                                <thead>
+                                    <tr>
+                                        <th>Threat Name</th>
+                                        <th>Original Location</th>
+                                        <th>Quarantined At</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="quarantine-list">
+                                    <tr>
+                                        <td colspan="4" class="empty-table">Secure vault is empty. No threats isolated.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Whitelist Page -->
+                <section class="page" id="whitelist">
+                    <div class="glass-panel mb-20">
+                        <h2>Add Exclusion Rule</h2>
+                        <p>Whitelist specific directories, files, or SHA256 hashes to prevent them from being scanned or quarantined. Whitelisting folders automatically restores any matches inside them from the Isolation Vault.</p>
+                        
+                        <div class="custom-scan-input mt-20" style="display: flex; gap: 12px; flex-direction: column;">
+                            <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
+                                <input type="text" class="premium-input" id="wl-path-input" placeholder="Exclusion Folder or File Path (e.g. C:\Games\dyson or C:\Windows\Temp\app.exe)" style="flex-grow: 1; padding: 10px 14px;">
+                                <input type="text" class="premium-input" id="wl-note-input" placeholder="Exclusion Description (e.g. Steam Game)" style="width: 250px; padding: 10px 14px;">
+                                <button class="btn btn-accent" id="btn-add-path" onclick="addWhitelistRule()" style="padding: 10px 24px; font-weight: 700;">Add Path Rule</button>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center; width: 100%; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 5px;">
+                                <input type="text" class="premium-input" id="wl-hash-input" placeholder="Exclusion SHA-256 Hash Rule (e.g. e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)" style="flex-grow: 1; padding: 10px 14px;">
+                                <button class="btn btn-cancel" id="btn-add-hash" onclick="addHashWhitelistRule()" style="padding: 10px 24px; font-weight: 700;">Add Hash Rule</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <h2>Active Exclusions Directory</h2>
+                        <div class="table-container scrollable">
+                            <table class="premium-table" id="whitelist-table">
+                                <thead>
+                                    <tr>
+                                        <th>Excluded File / Folder Location</th>
+                                        <th>SHA256 Hash Excluded</th>
+                                        <th>Rule Description</th>
+                                        <th>Added At</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="whitelist-list">
+                                    <tr>
+                                        <td colspan="5" class="empty-table">No whitelist rules configured. Standard defense active.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. LOGS & HISTORY PAGE -->
+                <section class="page" id="history">
+                    <div class="glass-panel">
+                        <h2>Detection Logs & Scan History</h2>
+                        <p>Complete historical registry of all security operations and scans performed.</p>
+                        
+                        <div class="table-container scrollable mt-20">
+                            <table class="premium-table" id="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Scan Scope</th>
+                                        <th>Triggered Date / Time</th>
+                                        <th>Duration</th>
+                                        <th>Files Evaluated</th>
+                                        <th>Findings</th>
+                                        <th>Execution Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-list">
+                                    <tr>
+                                        <td colspan="6" class="empty-table">No scan histories found. Perform a scan to build logs.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. OPTIMIZER PAGE -->
+                <section class="page" id="optimizer">
+                    <div class="optimizer-grid">
+                        <div class="glass-panel col-main">
+                            <div class="panel-header">
+                                <h2>Performance Optimizer Core</h2>
+                                <p>Analyze and clean up system bloat, registry keys, and cache files dynamically.</p>
+                            </div>
+
+                            <!-- Diagnostic Cards -->
+                            <div class="optimizer-cards-grid mt-20">
+                                <div class="opt-card">
+                                    <h3>Estimated Bloat Files</h3>
+                                    <p class="opt-value" id="opt-junk-val">Scanning...</p>
+                                    <span class="opt-desc">Temporary files & system caches</span>
+                                </div>
+                                <div class="opt-card">
+                                    <h3>Broken Registry Items</h3>
+                                    <p class="opt-value" id="opt-reg-val">Scanning...</p>
+                                    <span class="opt-desc">Dead paths & missing references</span>
+                                </div>
+                            </div>
+
+                            <!-- Selector Checkboxes -->
+                            <div class="optimize-targets-card mt-20">
+                                <h3>Select Optimization Target Classes</h3>
+                                <div class="chk-group">
+                                    <label class="chk-label">
+                                        <input type="checkbox" id="chk-temp" checked>
+                                        <span class="chk-custom"></span>
+                                        Temporary Files & Caches
+                                    </label>
+                                    <label class="chk-label">
+                                        <input type="checkbox" id="chk-reg" checked>
+                                        <span class="chk-custom"></span>
+                                        Invalid Registry Entries
+                                    </label>
+                                    <label class="chk-label">
+                                        <input type="checkbox" id="chk-logs">
+                                        <span class="chk-custom"></span>
+                                        System Log Directories
+                                    </label>
+                                </div>
+                                <button class="btn btn-accent mt-20 w-100" onclick="runOptimization()">Execute Safe Cleanup</button>
+                            </div>
+                        </div>
+
+                        <!-- Right: Speedup Statistics -->
+                        <div class="glass-panel col-side">
+                            <div class="panel-header">
+                                <h2>Boost Statistics</h2>
+                            </div>
+                            <div class="boost-stats">
+                                <div class="boost-gauge">
+                                    <div class="boost-ring">
+                                        <span class="boost-percent">READY</span>
+                                    </div>
+                                    <p class="boost-title">System Readiness</p>
+                                </div>
+                                <div class="boost-details">
+                                    <p class="b-text">Elevate OS priority scheduler class in settings to further maximize engine speeds.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. SETTINGS PAGE -->
+                <section class="page" id="settings">
+                    <div class="settings-grid">
+                        <div class="glass-panel">
+                            <h2>Engine & Scanner Preferences</h2>
+                            <p>Configure detection threshold settings, cloud verifications, and resource scheduling.</p>
+
+                            <div class="settings-list mt-20">
+                                <!-- Option 1 -->
+                                <div class="setting-row">
+                                    <div class="setting-info">
+                                        <h4>Extreme Performance Allocation</h4>
+                                        <p>Elevates OS CPU scheduler priority class and structures 100MB database caching.</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="cfg-perf">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <!-- Option 2 -->
+                                <div class="setting-row">
+                                    <div class="setting-info">
+                                        <h4>Auto-Quarantine Threats</h4>
+                                        <p>Securely encrypt and isolate detected threats automatically upon identification.</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="cfg-quar">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <!-- Option 3 -->
+                                <div class="setting-row">
+                                    <div class="setting-info">
+                                        <h4>Scan Compressed Archives</h4>
+                                        <p>Decompress and analyze content inside nested archive extensions (.zip, .rar, .7z).</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="cfg-arch">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <!-- Option 4 -->
+                                <div class="setting-row">
+                                    <div class="setting-info">
+                                        <h4>VirusTotal Cloud Integration</h4>
+                                        <p>Authenticate and query global threat engines utilizing personal API credentials.</p>
+                                    </div>
+                                    <input type="password" id="cfg-vt-key" class="premium-input" placeholder="Paste VirusTotal API Key here">
+                                </div>
+
+                                <button class="btn btn-accent mt-20" onclick="saveSettings()">Save Configuration</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script imports -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
