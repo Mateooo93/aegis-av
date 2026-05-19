@@ -15,7 +15,14 @@ try:
     print("[INFO] PyInstaller is already installed.")
 except ImportError:
     print("[INFO] Installing PyInstaller...")
-    subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller"], check=True)
+    try:
+        subprocess.run(["pip", "install", "pyinstaller"], check=True)
+    except Exception:
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller"], check=True)
+        except Exception as e:
+            print(f"[WARNING] Could not install PyInstaller automatically: {e}")
+            print("Please ensure pyinstaller is installed in your python environment.")
 
 # 2. Execute PyInstaller build command
 print("[INFO] Compiling application binary with PyInstaller...")
@@ -54,7 +61,7 @@ echo   Aegis AV - Start Menu Shortcut Setup
 echo ==================================================
 echo.
 echo Creating Start Menu shortcut...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$WshShell = New-Object -ComObject WScript.Shell; $ShortcutPath = \\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Aegis AV.lnk\\"; $Shortcut = $WshShell.CreateShortcut($ShortcutPath); $Shortcut.TargetPath = \\"%~dp0AegisAV.exe\\"; $Shortcut.WorkingDirectory = \\"%~dp0\\"; $Shortcut.Description = \\"Aegis AV Security Suite\\"; $Shortcut.IconLocation = \\"%~dp0icon.ico\\"; $Shortcut.Save(); Write-Output 'Start Menu shortcut created successfully! You can now search for Aegis AV in Windows Search.'"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$WshShell = New-Object -ComObject WScript.Shell; $ShortcutPath = Join-Path $env:APPDATA 'Microsoft\\Windows\\Start Menu\\Programs\\Aegis AV.lnk'; $Shortcut = $WshShell.CreateShortcut($ShortcutPath); $Shortcut.TargetPath = '%~dp0AegisAV.exe'; $Shortcut.WorkingDirectory = '%~dp0'; $Shortcut.Description = 'Aegis AV Security Suite'; $Shortcut.IconLocation = '%~dp0icon.ico'; $Shortcut.Save(); Write-Output 'Start Menu shortcut created successfully! You can now search for Aegis AV in Windows Search.'"
 echo.
 pause
 """
