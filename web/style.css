@@ -1394,9 +1394,8 @@ input:checked + .slider:before {
     border-top-color: var(--accent);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    animation: ring-rotate 4s linear infinite;
 }
-.boost-percent { font-size: 12px; font-weight: 800; color: var(--accent); animation: ring-pulse 1.5s infinite ease-in-out; }
+.boost-percent { font-size: 12px; font-weight: 800; color: var(--accent); }
 
 @keyframes ring-rotate { from { transform: rotate(0); } to { transform: rotate(360deg); } }
 @keyframes ring-pulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
