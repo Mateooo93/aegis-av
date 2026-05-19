@@ -16,6 +16,7 @@ let lastSecurityScore = null;
 /* ───────────────────────────── Boot ───────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
     initTitleBar();
+    initResize();
     initNavigation();
     initWebSocket();
     initCommandPalette();
@@ -422,6 +423,57 @@ function initTitleBar() {
     // Double-click the drag area toggles maximize
     const drag = document.querySelector('.tb-drag');
     if (drag) drag.addEventListener('dblclick', () => callApi('toggle_maximize'));
+}
+
+function initResize() {
+    const right = document.querySelector('.resize-handle.right');
+    const bottom = document.querySelector('.resize-handle.bottom');
+    const bottomRight = document.querySelector('.resize-handle.bottom-right');
+
+    let startX, startY, startWidth, startHeight;
+    let activeHandle = null;
+
+    const onMouseDown = (e, handleType) => {
+        e.preventDefault();
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = window.outerWidth || window.innerWidth;
+        startHeight = window.outerHeight || window.innerHeight;
+        activeHandle = handleType;
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    };
+
+    const onMouseMove = (e) => {
+        if (!activeHandle) return;
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+
+        if (activeHandle === 'right' || activeHandle === 'bottomRight') {
+            newWidth = Math.max(1024, startWidth + deltaX);
+        }
+        if (activeHandle === 'bottom' || activeHandle === 'bottomRight') {
+            newHeight = Math.max(680, startHeight + deltaY);
+        }
+
+        const api = window.pywebview && window.pywebview.api;
+        if (api && typeof api.resize === 'function') {
+            api.resize(newWidth, newHeight);
+        }
+    };
+
+    const onMouseUp = () => {
+        activeHandle = null;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    if (right) right.addEventListener('mousedown', (e) => onMouseDown(e, 'right'));
+    if (bottom) bottom.addEventListener('mousedown', (e) => onMouseDown(e, 'bottom'));
+    if (bottomRight) bottomRight.addEventListener('mousedown', (e) => onMouseDown(e, 'bottomRight'));
 }
 
 /* ─────────────────── Monitor feed ─────────────────── */

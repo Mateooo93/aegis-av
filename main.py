@@ -121,6 +121,10 @@ def main():
                 try: self._window.destroy()
                 except Exception: pass
 
+            def resize(self, width, height):
+                try: self._window.resize(width, height)
+                except Exception: pass
+
         api = WindowAPI()
 
         logger.info("Launching standalone Aegis AV Desktop App...")
