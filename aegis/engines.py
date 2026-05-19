@@ -538,17 +538,31 @@ class YaraEngine:
     def _load_rules(self):
         """Load YARA rules from the rules directory."""
         try:
-            rule_files = {}
-            for fname in os.listdir(RULES_DIR):
-                if fname.endswith((".yar", ".yara")):
-                    rule_path = os.path.join(RULES_DIR, fname)
-                    rule_files[fname] = rule_path
+            rules_sources = {}
+            loaded_count = 0
+            if os.path.exists(RULES_DIR):
+                for fname in os.listdir(RULES_DIR):
+                    if fname.endswith((".yar", ".yara", ".enc")):
+                        rule_path = os.path.join(RULES_DIR, fname)
+                        try:
+                            with open(rule_path, "rb") as f:
+                                raw_data = f.read()
+                            
+                            # Decrypt if using encrypted format
+                            if fname.endswith(".enc"):
+                                decrypted = bytes(b ^ 0x5A for b in raw_data)
+                                rules_sources[fname] = decrypted.decode("utf-8", errors="ignore")
+                            else:
+                                rules_sources[fname] = raw_data.decode("utf-8", errors="ignore")
+                            loaded_count += 1
+                        except Exception as file_err:
+                            logger.error("Error reading rule file %s: %s", fname, file_err)
 
-            if rule_files:
-                self.rules = yara.compile(filepaths=rule_files)
-                logger.info("Loaded %d YARA rule files", len(rule_files))
+            if rules_sources:
+                self.rules = yara.compile(sources=rules_sources)
+                logger.info("Loaded %d YARA rule definitions in-memory", loaded_count)
             else:
-                logger.warning("No YARA rule files found in %s", RULES_DIR)
+                logger.warning("No YARA rule definitions (.yar, .yara, .enc) found in %s", RULES_DIR)
         except Exception as e:
             logger.error("Failed to compile YARA rules: %s", e)
             self.rules = None

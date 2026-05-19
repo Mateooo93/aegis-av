@@ -30,3 +30,7 @@ build/
 dist/
 *.spec
 *.zip
+
+# Cleartext YARA signature rules (use encrypted version instead)
+rules/*.yar
+rules/*.yara
