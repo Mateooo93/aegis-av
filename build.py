@@ -61,7 +61,10 @@ echo   Aegis AV - Start Menu Shortcut Setup
 echo ==================================================
 echo.
 echo Creating Start Menu shortcut...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$WshShell = New-Object -ComObject WScript.Shell; $ShortcutPath = Join-Path $env:APPDATA 'Microsoft\\Windows\\Start Menu\\Programs\\Aegis AV.lnk'; $Shortcut = $WshShell.CreateShortcut($ShortcutPath); $Shortcut.TargetPath = '%~dp0AegisAV.exe'; $Shortcut.WorkingDirectory = '%~dp0'; $Shortcut.Description = 'Aegis AV Security Suite'; $Shortcut.IconLocation = '%~dp0icon.ico'; $Shortcut.Save(); Write-Output 'Start Menu shortcut created successfully! You can now search for Aegis AV in Windows Search.'"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$WshShell = New-Object -ComObject WScript.Shell; $ShortcutPath = Join-Path $env:APPDATA 'Microsoft\\Windows\\Start Menu\\Programs\\Aegis AV.lnk'; $Shortcut = $WshShell.CreateShortcut($ShortcutPath); $Shortcut.TargetPath = '%~dp0AegisAV.exe'; $Shortcut.WorkingDirectory = '%~dp0'; $Shortcut.Description = 'Aegis AV Security Suite'; $Shortcut.IconLocation = '%~dp0icon.ico'; $Shortcut.Save(); Write-Output 'Start Menu shortcut created successfully!'"
+echo.
+echo Launching Aegis AV...
+start "" "%~dp0AegisAV.exe"
 echo.
 pause
 """
