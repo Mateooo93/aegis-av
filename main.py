@@ -100,25 +100,25 @@ def main():
         # JS-side API for our custom dark title bar (frameless window)
         class WindowAPI:
             def __init__(self):
-                self.window = None
+                self._window = None
                 self._maximized = False
 
             def minimize(self):
-                try: self.window.minimize()
+                try: self._window.minimize()
                 except Exception: pass
 
             def toggle_maximize(self):
                 try:
                     if self._maximized:
-                        self.window.restore()
+                        self._window.restore()
                     else:
-                        self.window.maximize()
+                        self._window.maximize()
                     self._maximized = not self._maximized
                 except Exception:
                     pass
 
             def close(self):
-                try: self.window.destroy()
+                try: self._window.destroy()
                 except Exception: pass
 
         api = WindowAPI()
@@ -136,7 +136,7 @@ def main():
             background_color="#060912",  # avoid white flash before first paint
             js_api=api,
         )
-        api.window = window
+        api._window = window
         webview.start()
         
     except Exception as e:
