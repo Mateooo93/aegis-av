@@ -1,87 +1,136 @@
-# 🛡️ Aegis AV — Next-Gen Open-Source Security Suite
+# Aegis AV — Next-Gen Open-Source Security Suite
 
 [![FOSS License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)](https://www.python.org/)
-[![Edition](https://img.shields.io/badge/Edition-FOSS%20Community-orange.svg)]()
+[![Edition](https://img.shields.io/badge/Edition-FOSS%20Community%202.1-orange.svg)]()
 
-Aegis AV is a high-performance, resource-efficient, and visually stunning open-source antivirus and security suite. It features multi-engine heuristic file scanning, active real-time defense monitoring, custom whitelist controls with automated isolated restorations, system telemetry, and a built-in safe performance optimizer.
+Aegis AV is a high-performance, resource-efficient, and visually stunning open-source
+antivirus and security suite. It pairs multi-engine file scanning with a download
+inspector, an application firewall, a ransomware shield, a system-vulnerability
+scanner, a process & network inspector, and a real-time security-score gauge — all
+wrapped in a premium PyWebView desktop UI.
 
 ---
 
-## 💡 The Mission & Origin
+## The Mission
 
 > **"I am a student who got tired of corporate antivirus paywalls and aggressive ads."**
-> 
-> Most modern corporate antivirus applications have become bloated, expensive, and spam you with constant popups urging you to buy premium subscriptions. Some even lock basic features (like registry cleanups, firewalls, or automatic threat isolation) behind paywalls. 
-> 
-> I built **Aegis AV** to escape that cycle. It is a 100% free, open-source, ad-free, and popup-free alternative built with modern tech stack. Security is a basic right, not a subscription service. 
+>
+> Most modern AV apps have become bloated, expensive, and noisy — locking basic
+> features like firewalls and ransomware shields behind subscriptions. Aegis is
+> 100% free, open-source, ad-free, and pop-up-free. Security is a basic right,
+> not a subscription service.
 
 ---
 
-## Key Core Features
+## What's New in 2.1
 
-- **Multi-Engine Threat Scanning**: Highly responsive scanning utilizing local fast cryptographic hashes, PE (Portable Executable) structural analyzer, active heuristic signature rules, and optional VirusTotal Cloud Verification.
-- **Active Real-Time Defense**: Built-in file system monitors that watch, intercept, scan, and quarantine infected files instantly upon creation or modification.
-- **Smart Isolation Vault (Quarantine)**: Inert, encrypted, and isolated storage of quarantined files to protect the operating system.
-- **Advanced Whitelisting & Auto-Restoration**: Exclude directories, files, or SHA-256 hashes. Adding a whitelist path rule automatically matches and instantly restores matching quarantined files back to their original locations.
-- **Performance Optimizer Core**: Safe and rapid cleanup of junk caches and dead system registries, returning computers to peak performance.
-- **Network Telemetry & Process Watcher**: Real-time visual metrics of open network ports, CPU and RAM hardware allocation, active processes, and background security states.
-- **Standalone Native Desktop App**: Wrapped in a desktop environment using `PyWebView` for smooth transitions and a premium native look.
+| Module                  | What it does                                                                  |
+|-------------------------|-------------------------------------------------------------------------------|
+| **Web & Download Shield** | URL reputation checker + auto-scan every new download with toast alerts.   |
+| **Application Firewall**  | Per-process egress monitor with block rules (IP / host / port / process).  |
+| **Intrusion Detection**   | Detects port scans, C2 beacons, Tor exits, and blocked-rule hits.          |
+| **Ransomware Shield**     | Behavior monitor on protected folders (mass-modify, ransom extensions).    |
+| **System Vulnerabilities**| Defender state, Firewall profiles, pending updates, SMBv1, UAC, BitLocker…  |
+| **Process Manager**       | Live process list, suspicious tagging, one-click kill.                     |
+| **Startup Manager**       | View / remove Windows Run-key & Startup-folder entries.                    |
+| **Network Inspector**     | All TCP/UDP sessions + interfaces + cumulative I/O counters.               |
+| **USB Auto-Scan**         | Newly inserted removable media is scanned automatically.                   |
+| **Scheduler**             | Daily / weekly / boot-time scans with timer-based dispatch.                |
+| **Password Health**       | Offline strength scoring + Have-I-Been-Pwned k-anonymity check.            |
+| **Threat Intel Feed**     | Rotating curated cards on current campaigns.                               |
+| **Reports & Analytics**   | Chart.js dashboards for threats / scans / severity / engine breakdown.     |
+| **Security Score**        | 7-pillar 0-100 score with grade + recommendations, animated SVG gauge.     |
+| **Notification Center**   | Toast pop-ups + persisted history; muteable Game Mode.                     |
+| **Command Palette**       | Press **Ctrl+K** to jump anywhere or run an action.                        |
 
 ---
 
-## 🏗️ Architecture Layout
+## Core Features (carried over from 2.0)
+
+- **Multi-Engine Scanner**: hash, heuristic, PE analyzer, YARA, optional VirusTotal cloud.
+- **Real-Time File Protection**: watchdog-based monitor, auto-scan on create/modify.
+- **Encrypted Quarantine Vault**: XOR-encoded inert container with restore/purge.
+- **Whitelist Engine**: path + SHA-256 rules, auto-restore on whitelist match.
+- **Performance Optimizer**: temp + browser cache cleanup, registry analysis.
+- **High-Performance Server**: FastAPI + WebSocket; thread-local SQLite (100MB cache).
+- **Native Desktop Window**: PyWebView wrapper, no browser required.
+
+---
+
+## Architecture
 
 ```mermaid
 graph TD
-    A[Native Desktop Wrapper: PyWebView] --> B[FastAPI Web Server Backend]
-    B --> C[Real-Time Monitor: watchdog]
-    B --> D[Multi-Engine Scanner Core]
-    B --> E[SQLite Persistent DB: aegis.db]
-    D --> F[PE Analyzer & Heuristics]
-    D --> G[Cloud Engines: VirusTotal]
-    D --> H[Local Hash Engine]
-    C -->|Flagged Events| I[Encrypted Isolation Quarantine Vault]
+    A[PyWebView Native Window] --> B[FastAPI + WebSocket Server]
+    B --> C[Real-Time File Monitor]
+    B --> D[Process & Network Monitor]
+    B --> E[Web Shield + Download Inspector]
+    B --> F[Application Firewall + IDS]
+    B --> G[Ransomware Shield]
+    B --> H[Vulnerability Scanner]
+    B --> I[Scheduler]
+    B --> J[Scan Engine ⟶ Hash / Heuristic / PE / YARA / VT]
+    B --> K[SQLite Persistent DB]
+    J --> L[Encrypted Quarantine Vault]
+    F --> M[Toast Notification Center]
+    G --> M
+    E --> M
+    C --> M
 ```
 
 ---
 
-## ⚙️ How to Install & Run
+## Installation & Run
 
-Ensure you have **Python 3.10+** installed on your Windows system.
+Requires **Python 3.10+** on Windows 10/11.
 
-### 1. Clone the Repository
 ```bash
 git clone https://github.com/testaccount344-bit/aegis-av.git
 cd aegis-av
-```
-
-### 2. Install Dependencies
-```bash
 pip install -r requirements.txt
-```
-
-### 3. Run Aegis AV
-Simply execute the main wrapper script to start the desktop suite:
-```bash
 python main.py
 ```
 
+For best results run as administrator so the Vulnerability Scanner can access
+Defender / BitLocker / Update APIs and the Firewall can read all PIDs.
+
 ---
 
-## 🚧 Student Project Disclaimer & Contributions
+## Keyboard Shortcuts
 
-This is a student-built project! While it has been thoroughly optimized and refined, there may still be bugs, edge cases, or features that need polishing. 
+| Shortcut       | Action                                |
+|----------------|---------------------------------------|
+| `Ctrl + K`     | Open command palette / quick search   |
+| `Esc`          | Close palette / modal / dialog        |
 
-I have big plans to make it even better, including:
-* Adding advanced local signature rules (YARA-based integration).
-* Enhancing kernel-level or process-isolation hooks.
-* Refining custom optimization algorithms.
+---
 
-### 🤝 We're Open to Collaborations!
-If you want to help make the internet a safer, ad-free place:
-* **Bug Fixes**: Found an issue? Submit a PR or open an Issue!
-* **Feature Requests**: Have an idea for a cool security widget or scanning metric? Let's discuss it!
-* **General Polish**: We're highly open to code refactoring and performance updates.
+## REST + WebSocket API surface
 
-Let's make Aegis AV the ultimate FOSS security suite together! 🌟
+Aegis ships **63 REST endpoints** and a `/ws` WebSocket. Highlights:
+
+| Endpoint                          | Purpose                              |
+|-----------------------------------|--------------------------------------|
+| `GET /api/security-score`         | Aggregated 7-pillar score            |
+| `POST /api/scan/start`            | Quick / full / custom / boot scan    |
+| `POST /api/web-shield/check-url`  | URL reputation verdict               |
+| `POST /api/firewall/rules`        | Add an IP / host / port / proc rule  |
+| `POST /api/ransomware/folders`    | Add a protected folder               |
+| `GET  /api/vulnerabilities`       | Full system audit (cached 5 min)     |
+| `GET  /api/processes?sort=cpu`    | Live process snapshot                |
+| `POST /api/password-health`       | Strength + breach check              |
+| `GET  /api/reports`               | 14-day analytics for the Reports tab |
+| `WS   /ws`                        | Live telemetry, monitor events, toasts |
+
+A full OpenAPI doc is available at `http://127.0.0.1:8000/docs` while the app
+is running.
+
+---
+
+## Contributing
+
+Bug fixes, signature contributions, UI polish — all welcome. Open an issue
+with the `enhancement` label and let's discuss.
+
+Let's make Aegis AV the ultimate FOSS security suite together.

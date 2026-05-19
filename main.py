@@ -82,32 +82,61 @@ def main():
     import uvicorn
     import webview
     import time
-    
+
     try:
         # Start high-performance uvicorn web server inside background thread
         def run_server():
             try:
-                # Use warning log level to keep uvicorn logs clean
                 uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=False, log_level="warning")
             except Exception as e:
                 logger.critical("Web service thread crashed: %s", e)
-                
+
         server_thread = threading.Thread(target=run_server, daemon=True)
         server_thread.start()
-        
+
         # Allow FastAPI server to bind to port before native window launch
         time.sleep(1.0)
-        
-        # Create beautiful, borderless, hardware-accelerated standalone native window
+
+        # JS-side API for our custom dark title bar (frameless window)
+        class WindowAPI:
+            def __init__(self):
+                self.window = None
+                self._maximized = False
+
+            def minimize(self):
+                try: self.window.minimize()
+                except Exception: pass
+
+            def toggle_maximize(self):
+                try:
+                    if self._maximized:
+                        self.window.restore()
+                    else:
+                        self.window.maximize()
+                    self._maximized = not self._maximized
+                except Exception:
+                    pass
+
+            def close(self):
+                try: self.window.destroy()
+                except Exception: pass
+
+        api = WindowAPI()
+
         logger.info("Launching standalone Aegis AV Desktop App...")
-        webview.create_window(
+        window = webview.create_window(
             title="Aegis AV Security Suite",
             url="http://127.0.0.1:8000/",
-            width=1200,
-            height=750,
-            min_size=(1000, 650),
-            resizable=True
+            width=1280,
+            height=820,
+            min_size=(1024, 680),
+            resizable=True,
+            frameless=True,
+            easy_drag=False,             # the HTML title bar declares the drag region
+            background_color="#060912",  # avoid white flash before first paint
+            js_api=api,
         )
+        api.window = window
         webview.start()
         
     except Exception as e:

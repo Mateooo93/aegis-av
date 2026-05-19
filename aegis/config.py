@@ -123,8 +123,12 @@ DEFAULT_CONFIG = {
         r"C:\$Recycle.Bin",
     ],
     "max_file_size_mb": 500,
-    "realtime_protection": False,
-    "realtime_paths": [os.path.expanduser("~")],
+    "realtime_protection": True,
+    "realtime_paths": [
+        os.path.join(os.path.expanduser("~"), "Downloads"),
+        os.path.join(os.path.expanduser("~"), "Documents"),
+        os.path.join(os.path.expanduser("~"), "Desktop"),
+    ],
     "virustotal_api_key": "",
     "scan_archives": True,
     "heuristic_sensitivity": "medium",  # low, medium, high
@@ -132,6 +136,7 @@ DEFAULT_CONFIG = {
     "scheduled_scan_enabled": False,
     "scheduled_scan_time": "02:00",
     "scheduled_scan_type": "quick",
+    "scan_schedules": [],
     "theme": "dark",
     "notifications_enabled": True,
     "excluded_paths": [],
@@ -140,6 +145,20 @@ DEFAULT_CONFIG = {
     "scan_memory": True,
     "update_definitions_auto": True,
     "performance_mode": False,
+
+    # ── Aegis 2.1 — New defensive layers ────────────────────────
+    "web_shield_enabled": True,
+    "firewall_enabled": True,
+    "ransomware_shield_enabled": True,
+    "ransomware_protected_folders": [
+        os.path.join(os.path.expanduser("~"), "Documents"),
+        os.path.join(os.path.expanduser("~"), "Pictures"),
+        os.path.join(os.path.expanduser("~"), "Desktop"),
+    ],
+    "game_mode": False,  # Silences toast notifications when on
+    "boot_scan_pending": False,
+    "first_run_complete": False,
+    "url_blocklist_custom": [],
 }
 
 

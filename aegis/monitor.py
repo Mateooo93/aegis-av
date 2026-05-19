@@ -45,6 +45,12 @@ class FileEventHandler(FileSystemEventHandler):
 
     def _should_scan(self, path):
         """Check if file should be scanned (cooldown + extension check)."""
+        lower_path = path.lower()
+        # Skip system, dev, temp build folders that change very frequently
+        ignored_patterns = ["appdata", ".git", ".gemini", "node_modules", ".vscode", ".idea", "venv", "__pycache__"]
+        if any(pat in lower_path for pat in ignored_patterns):
+            return False
+
         if not os.path.isfile(path):
             return False
 

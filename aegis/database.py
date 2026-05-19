@@ -112,11 +112,24 @@ class ThreatDatabase:
                     was_threat INTEGER DEFAULT 0
                 );
 
+                CREATE TABLE IF NOT EXISTS notifications (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    kind TEXT NOT NULL,
+                    title TEXT NOT NULL,
+                    message TEXT,
+                    severity TEXT DEFAULT 'info',
+                    created_at TEXT NOT NULL,
+                    read_at TEXT
+                );
+
                 CREATE INDEX IF NOT EXISTS idx_threats_scan_id ON threats(scan_id);
                 CREATE INDEX IF NOT EXISTS idx_threats_severity ON threats(severity);
                 CREATE INDEX IF NOT EXISTS idx_malware_sha256 ON malware_hashes(hash_sha256);
                 CREATE INDEX IF NOT EXISTS idx_whitelist_hash ON whitelist(file_hash);
                 CREATE INDEX IF NOT EXISTS idx_quarantine_original ON quarantine(original_path);
+                CREATE INDEX IF NOT EXISTS idx_events_type ON realtime_events(event_type);
+                CREATE INDEX IF NOT EXISTS idx_events_ts ON realtime_events(timestamp);
+                CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(read_at);
             """)
             conn.commit()
             
@@ -475,6 +488,157 @@ class ThreatDatabase:
             conn.commit()
         except Exception:
             pass
+
+    # ── Notifications ──────────────────────────────────────────────
+    def add_notification(self, kind, title, message="", severity="info"):
+        """Insert a notification record. Returns id."""
+        conn = self._get_conn()
+        cursor = conn.execute(
+            """INSERT INTO notifications (kind, title, message, severity, created_at)
+               VALUES (?, ?, ?, ?, ?)""",
+            (kind, title, message, severity, datetime.now().isoformat())
+        )
+        conn.commit()
+        return cursor.lastrowid
+
+    def get_notifications(self, limit=50, unread_only=False):
+        conn = self._get_conn()
+        if unread_only:
+            rows = conn.execute(
+                "SELECT * FROM notifications WHERE read_at IS NULL ORDER BY created_at DESC LIMIT ?",
+                (limit,)
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT * FROM notifications ORDER BY created_at DESC LIMIT ?",
+                (limit,)
+            ).fetchall()
+        return [dict(r) for r in rows]
+
+    def unread_notification_count(self):
+        conn = self._get_conn()
+        return conn.execute(
+            "SELECT COUNT(*) FROM notifications WHERE read_at IS NULL"
+        ).fetchone()[0]
+
+    def mark_notification_read(self, notif_id):
+        conn = self._get_conn()
+        conn.execute(
+            "UPDATE notifications SET read_at = ? WHERE id = ?",
+            (datetime.now().isoformat(), notif_id)
+        )
+        conn.commit()
+
+    def mark_all_notifications_read(self):
+        conn = self._get_conn()
+        conn.execute(
+            "UPDATE notifications SET read_at = ? WHERE read_at IS NULL",
+            (datetime.now().isoformat(),)
+        )
+        conn.commit()
+
+    def clear_notifications(self):
+        conn = self._get_conn()
+        conn.execute("DELETE FROM notifications")
+        conn.commit()
+
+    # ── Aggregated analytics for the Reports page ──────────────────
+    def get_threats_over_time(self, days=14):
+        """Return [{date, count}] for the last `days` days (today inclusive)."""
+        from datetime import timedelta as _td
+        conn = self._get_conn()
+        now = datetime.now().date()
+        buckets = {}
+        for i in range(days - 1, -1, -1):
+            d = (now - _td(days=i)).isoformat()
+            buckets[d] = 0
+        try:
+            rows = conn.execute(
+                "SELECT detected_at FROM threats WHERE detected_at >= ?",
+                ((now - _td(days=days - 1)).isoformat(),)
+            ).fetchall()
+            for r in rows:
+                try:
+                    d = datetime.fromisoformat(r["detected_at"]).date().isoformat()
+                    if d in buckets:
+                        buckets[d] += 1
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        return [{"date": d, "count": c} for d, c in buckets.items()]
+
+    def get_scans_over_time(self, days=14):
+        """Return [{date, count}] of scans for the last `days` days."""
+        from datetime import timedelta as _td
+        conn = self._get_conn()
+        now = datetime.now().date()
+        buckets = {}
+        for i in range(days - 1, -1, -1):
+            d = (now - _td(days=i)).isoformat()
+            buckets[d] = 0
+        try:
+            rows = conn.execute(
+                "SELECT start_time FROM scan_history WHERE start_time >= ?",
+                ((now - _td(days=days - 1)).isoformat(),)
+            ).fetchall()
+            for r in rows:
+                try:
+                    d = datetime.fromisoformat(r["start_time"]).date().isoformat()
+                    if d in buckets:
+                        buckets[d] += 1
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        return [{"date": d, "count": c} for d, c in buckets.items()]
+
+    def get_severity_breakdown(self):
+        conn = self._get_conn()
+        result = {"low": 0, "medium": 0, "high": 0, "critical": 0}
+        try:
+            for row in conn.execute(
+                "SELECT severity, COUNT(*) as cnt FROM threats GROUP BY severity"
+            ).fetchall():
+                key = (row["severity"] or "low").lower()
+                if key in result:
+                    result[key] += row["cnt"]
+        except Exception:
+            pass
+        return result
+
+    def get_engine_breakdown(self):
+        conn = self._get_conn()
+        result = {}
+        try:
+            for row in conn.execute(
+                "SELECT detection_engine, COUNT(*) as cnt FROM threats GROUP BY detection_engine"
+            ).fetchall():
+                key = row["detection_engine"] or "unknown"
+                # Split combined engine strings like "HashEngine, PEAnalyzer"
+                for eng in (e.strip() for e in key.split(",")):
+                    if not eng:
+                        continue
+                    result[eng] = result.get(eng, 0) + row["cnt"]
+        except Exception:
+            pass
+        return result
+
+    def event_kind_counts(self, hours=24):
+        from datetime import timedelta as _td
+        conn = self._get_conn()
+        cutoff = (datetime.now() - _td(hours=hours)).isoformat()
+        result = {}
+        try:
+            for row in conn.execute(
+                "SELECT event_type, COUNT(*) as cnt FROM realtime_events "
+                "WHERE timestamp >= ? GROUP BY event_type",
+                (cutoff,)
+            ).fetchall():
+                result[row["event_type"]] = row["cnt"]
+        except Exception:
+            pass
+        return result
 
     def close(self):
         """Close the database connection."""
