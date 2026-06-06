@@ -134,3 +134,7 @@ Bug fixes, signature contributions, UI polish — all welcome. Open an issue
 with the `enhancement` label and let's discuss.
 
 Let's make Aegis AV the ultimate FOSS security suite together.
+
+---
+
+_This repo was transferred from my old account to this brand new one._
